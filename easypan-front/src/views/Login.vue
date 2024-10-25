@@ -357,85 +357,117 @@ const resetForm = () => {
 
 <style lang="scss">
 .login-body {
-  height: calc(100vh);
+  height: 100vh;
+  background: linear-gradient(135deg, rgba(106, 17, 203, 0.8), rgba(37, 117, 252, 0.8)), 
+              url("../assets/1013373.png") no-repeat center center;
   background-size: cover;
-  background: url("../assets/1013373.png");
   display: flex;
+  justify-content: center;
+  align-items: center;
 
   .bg {
-    flex: 1;
-    background-size: cover;
-    background-position: center;
-    background-size: 800px;
-    background-repeat: no-repeat;
-    background-image: url("../assets/undraw_Traveling_yhxq.svg");
+    display: none; // 隐藏背景图
   }
 
   .login-panel {
-    width: 430px;
-    margin-right: 15%;
-    margin-top: calc((100vh - 500px)/2);
+    width: 400px;
+    padding: 30px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 
     .login-register {
-      padding: 25px;
-      background: #fff;
-      border-radius: 5px;
-
       .login-title {
         text-align: center;
-        font-size: 18px;
+        font-size: 24px;
         font-weight: bold;
-        margin-bottom: 20px;
+        color: #333;
+        margin-bottom: 25px;
       }
 
       .send-email-panel {
         display: flex;
-        width: 100%;
         justify-content: space-between;
+        align-items: center;
 
-        .send-mail-btn {
-          margin-left: 5px;
+        .send-email-btn {
+          margin-left: 10px;
+          background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+          color: #fff;
+          border: none;
+          border-radius: 5px;
+          padding: 10px 20px;
+          cursor: pointer;
+          transition: background 0.3s;
+          &:hover {
+            background: linear-gradient(135deg, #5a0fb8 0%, #1a5bb8 100%);
+          }
         }
       }
 
+.el-form-item__content {
+  align-items: center;
+  display: flex;
+  flex: 1;
+  flex-wrap: wrap;
+  font-size: var(--font-size);
+  line-height: 32px;
+  min-width: 0;
+  position: relative;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
       .rememberme-panel {
-        width: 100%;
+        margin-top: 15px;
       }
 
       .no-account {
-        width: 100%;
+        margin-top: 20px;
         display: flex;
         justify-content: space-between;
+        width: 40%;
+        a {
+          color: #2575fc;
+          text-decoration: none;
+          font-weight: 500;
+          transition: color 0.3s;
+          &:hover {
+            color: #1a5bb8;
+            text-decoration: underline;
+          }
+        }
       }
 
       .op-btn {
         width: 100%;
+        background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        padding: 15px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background 0.3s;
+        &:hover {
+          background: linear-gradient(135deg, #5a0fb8 0%, #1a5bb8 100%);
+        }
       }
     }
   }
 
   .check-code-panel {
-    width: 100%;
-    display: flex;
-
-    .check-code {
-      margin-left: 5px;
-      cursor: pointer;
-    }
-  }
-
-  .login-btn-qq {
-    margin-top: 20px;
-    text-align: center;
+    margin-top: 15px;
     display: flex;
     align-items: center;
-    justify-content: center;
 
-    img {
-      cursor: pointer;
+    .check-code {
       margin-left: 10px;
-      width: 20px;
+      cursor: pointer;
+      border: 1px solid #ddd;
+      border-radius: 4px;
     }
   }
 }
 </style>
+
