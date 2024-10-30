@@ -7,7 +7,7 @@
       </div>
       <div class="right-panel">
         <el-popover :width="800" trigger="click" :v-model:visible="true" :offset="20" transition="none" :hide-after="0"
-          :popper-style="{padding:'0px'}">
+          :popper-style="{ padding: '0px' }">
           <template #reference>
             <span class="iconfont icon-transfer"></span>
           </template>
@@ -17,18 +17,20 @@
         </el-popover>
         <el-dropdown>
           <div class="user-info">
-            <div class="avatar"></div>
-            <span class="nick-name">{{ userInfo.nickName}}</span>
+            <div class="avatar">
+              <Avatar :userId="userInfo.userId" :avatar="userInfo.avatar" :timestamp="timestamp" ></Avatar>
+            </div>
+            <span class="nick-name">{{ userInfo.nickName }}</span>
           </div>
           <template #dropdown>
             <el-dropdown-menu>
-              <el-dropdown-item>
+              <el-dropdown-item @click="updateAvatar">
                 修改头像
               </el-dropdown-item>
-              <el-dropdown-item>
+              <el-dropdown-item @click="updatePassword">
                 修改密码
               </el-dropdown-item>
-              <el-dropdown-item>
+              <el-dropdown-item @click="logout">
                 退出
               </el-dropdown-item>
             </el-dropdown-menu>
@@ -39,32 +41,51 @@
     <div class="body">
       <div class="left-sider">
         <div class="menu-list">
-          <div class="menu-item" v-for="item in menus">
-            <div :class="['iconfont','icon-'+item.icon]"></div>
-            <div class="text">{{item.name}}</div>
+          <div :class="['menu-item', item.menuCode == currentMenu.menuCode ? 'active' : '']" v-for="item in menus"
+            @click="jump(item)">
+            <div :class="['iconfont', 'icon-' + item.icon]"></div>
+            <div class="text">{{ item.name }}</div>
           </div>
         </div>
         <div class="menu-sub-list">
-          <div :class="['item-item-sub']" v-for="sub in currentMenu.chidren">
-            <span :class="['iconfont','icon-'+sub.icon]" v-if="sub.icon"></span>
+          <div :class="['menu-item-sub', currentPath == sub.path ? 'active' : '']" v-for="sub in currentMenu.chidren"
+            @click="jump(sub)">
+            <span :class="['iconfont', 'icon-' + sub.icon]" v-if="sub.icon"></span>
             <span class="text">{{ sub.name }}</span>
+          </div>
+          <div class="tips" v-if="currentMenu && currentMenu.tips">{{ currentMenu.tips }}</div>
+          <div class="space-info">
+            <div>空间使用</div>
+            <div class="percent"></div>
           </div>
         </div>
       </div>
-      <div class="body-content"></div>
+      <div class="body-content">
+        <router-view v-slot="{ Component }">
+          <component :is="Component"></component>
+        </router-view>
+      </div>
     </div>
+    <UpdateAvatar ref="updateAvatarRef" @updateAvatar="reloadAvatar"></UpdateAvatar>
+    <UpdatePassword ref="updatePasswordRef"></UpdatePassword>
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, getCurrentInstance, nextTick, onMounted } from "vue";
+import Avatar from "@/components/Avatar.vue";
+import UpdateAvatar from "@/views/UpdateAvatar.vue";
+import UpdatePassword from "@/views/UpdatePassword.vue";
+import { ref, reactive, getCurrentInstance, nextTick, onMounted, watch } from "vue";
 import { useRouter, useRoute } from "vue-router";
-
+const router = useRouter();
+const route = useRoute();
 const { proxy } = getCurrentInstance();
+const timestamp = ref(0);
+const userInfo = ref(proxy.VueCookies.get("userInfo"));
 
-const userInfo = ref({
-  nickName: "helle world"
-});
+const api = {
+  logout: "/logout"
+}
 
 const menus = [
   {
@@ -158,42 +179,88 @@ const menus = [
         name: "系统设置",
       },
     ],
-  },
+  }
 ];
 
 const currentMenu = ref({});
- 
+const currentPath = ref();
+const jump = (item) => {
+  if (!item.path || item.menuCode == currentMenu.value.menuCode) {
+    return;
+  }
+  router.push(item.path);
+};
 
+const setMenu = (menuCode, path) => {
+  const menu = menus.find(item => {
+    return item.menuCode == menuCode;
+  });
+  currentMenu.value = menu;
+  currentPath.value = path;
+};
+
+ watch(() => route,(newVal, oldVal) => {
+  if (newVal.meta.menuCode) {
+    setMenu(newVal.meta.menuCode, newVal.path);
+  }
+ },
+   { immediate: true, deep: true }
+ );
+
+const updateAvatarRef = ref();
+const updateAvatar = () => {
+  updateAvatarRef.value.show(userInfo.value);
+};
+const reloadAvatar = () => {
+  userInfo.value = proxy.VueCookies.get("userInfo");
+  timestamp.value = new Date().getTime();
+};
+
+const updatePasswordRef = ref();
+const updatePassword = () => {
+  updatePasswordRef.value.show();
+};
+ 
+const logout = async () => {
+  proxy.Confirm("确定要退出吗？", async () => {
+    let result = await proxy.Request({
+      url: api.logout,
+    });
+    if (result) {
+      proxy.VueCookies.remove("userInfo");
+      router.push("/login");
+    } else {
+    return;
+    }
+  });
+  }
 </script>
 
 <style lang="scss" scoped>
 .header {
-  box-shadow: 0 3px 10px 0 rgb(0 0 0 / 20%);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   height: 56px;
-  padding-left: 24px;
-  padding-right: 24px;
-  position: relative;
-  z-index: 200;
+  padding: 0 24px;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  background-color: #fff5e6; /* 浅暖色背景 */
 
   .logo {
     display: flex;
     align-items: center;
 
     .icon-pan {
-      font-size: 40px;
-      color: #1296db;
+      font-size: 36px;
+      color: #ff8c00; /* 橙色 */
     }
 
     .name {
       font-weight: bold;
-      margin-left: 5px;
-      font-size: 25px;
-      color: #05a1f5;
+      margin-left: 8px;
+      font-size: 24px;
+      color: #cc5500; /* 深橙色 */
     }
-
   }
 
   .right-panel {
@@ -202,20 +269,30 @@ const currentMenu = ref({});
 
     .icon-transfer {
       cursor: pointer;
+      transition: transform 0.3s;
+      &:hover {
+        transform: scale(1.1);
+      }
     }
 
     .user-info {
-      margin-left: 10px;
+      margin-left: 15px;
       display: flex;
       align-items: center;
+      flex-direction: row-reverse;
+      
       cursor: pointer;
 
       .avatar {
-        margin: 0px 5px 0px 15px;
+        margin: 0 10px;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
       }
 
       .nick-name {
-        color: #05a1f5;
+        color: #ff8c00; /* 橙色 */
+        font-weight: 600;
       }
     }
   }
@@ -223,78 +300,127 @@ const currentMenu = ref({});
 
 .body {
   display: flex;
+  height: calc(100vh - 56px);
 
   .left-sider {
-    border-right: 1px solid #f1f2f4;
+    border-right: 1px solid #ffe4b5; /* 浅暖色 */
+    background-color: #fffaf0; /* 浅暖色背景 */
     display: flex;
+    flex-direction: column;
+    width: 240px;
 
     .menu-list {
-      height: calc(100vh - 56px);
       width: 80px;
-      box-shadow: 0 3px 10px 0 rgb(0 0 0 /6%);
-      border-right: 1px solid #f1f2f4;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      flex-shrink: 0;
 
       .menu-item {
         text-align: center;
         font-size: 14px;
-        padding: 20px 0px;
+        padding: 20px 0;
         cursor: pointer;
+        transition: background 0.3s;
 
         &:hover {
-          background: #f3f3f3;
+          background: #ffe4b5; /* 浅暖色 */
         }
 
         .iconfont {
-          font-weight: normal;
           font-size: 28px;
+          color: #d87093; /* 粉色 */
         }
       }
 
       .active {
         .iconfont {
-          background:#eef9fe;
-          .iconfont{
-            color: #05a1f5;
-          }
-          .text{
-            color: #05a1f5;
-          }
+          color: #ff8c00; /* 橙色 */
         }
-        .tips{
-          margin-top: 10px;
-          color: #888888;
-          font-size: 13px;
+
+        .text {
+          color: #ff8c00; /* 橙色 */
         }
-        .space-info{
-          position: absolute;
-          bottom: 10px;
-          width: 100%;
-          padding: 0px 5px;
-          .percent{
-            padding-right: 10px;
+      }
+    }
+
+    .menu-sub-list {
+      flex-grow: 1;
+      padding: 20px 10px 0;
+      overflow-y: auto;
+
+      .menu-item-sub {
+        text-align: center;
+        line-height: 40px;
+        cursor: pointer;
+        border-radius: 5px;
+        transition: background 0.3s;
+
+        &:hover {
+          background: #ffe4b5; /* 浅暖色 */
+        }
+
+        .iconfont {
+          font-size: 14px;
+          margin-right: 20px;
+          color: #9370db; /* 紫色 */
+        }
+
+        .text {
+          font-size: 14px;
+        }
+      }
+
+      .active {
+        background: #ffdab9; /* 浅暖色 */
+
+        .iconfont {
+          color: #ff8c00; /* 橙色 */
+        }
+
+        .text {
+          color: #ff8c00; /* 橙色 */
+        }
+      }
+
+      .tips {
+        margin-top: 10px;
+        color: #cc5500; /* 深橙色 */
+        font-size: 13px;
+      }
+
+      .space-info {
+        position: absolute;
+        bottom: 10px;
+        width: 100%;
+        padding: 0 5px;
+
+        .percent {
+          padding-right: 10px;
+        }
+
+        .space-use {
+          margin-top: 5px;
+          color: #cc5500; /* 深橙色 */
+          display: flex;
+          justify-content: space-around;
+
+          .use {
+            flex: 1;
           }
-          .space-use{
-            margin-top: 5px;
-            color: #7e7e7e;
-            display: flex;
-            justify-content: space-around;
-            .use{
-              flex:1;
-            }
-            .iconfont{
-              cursor: pointer;
-              margin-top: 20px;
-              color: #05a1f5;
-            }
+
+          .iconfont {
+            cursor: pointer;
+            margin-top: 20px;
+            color: #ff8c00; /* 橙色 */
           }
         }
       }
     }
   }
-  .body-content{
+
+  .body-content {
     flex: 1;
-    width: 0;
-    padding-left: 20px;
+    padding: 20px;
+    background-color: #fffaf0; /* 浅暖色背景 */
   }
 }
 </style>
