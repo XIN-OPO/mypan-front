@@ -198,7 +198,7 @@ const rules = {
   ],
   emailCode: [{ required: true, message: "请输入邮箱验证码" }],
   nickName: [{ required: true, message: "请输入昵称" }],
-  registerPassword: [
+  registerPassword: [ 
     { required: true, message: "请输入密码" },
     { validator: proxy.Verify.password, message: "密码只能是数字字母特殊字符，8-18位" }
   ],

@@ -6,13 +6,13 @@
         <div class="name">MyPan</div>
       </div>
       <div class="right-panel">
-        <el-popover :width="800" trigger="click" :v-model:visible="true" :offset="20" transition="none" :hide-after="0"
+        <el-popover :width="800" trigger="click" v-model:visible="showUpLoader" :offset="20" transition="none" :hide-after="0"
           :popper-style="{ padding: '0px' }">
           <template #reference>
             <span class="iconfont icon-transfer"></span>
           </template>
           <template #default>
-            这里是上传区域
+            <Uploader ref="uploaderRef" @uploadCallback="uploadCallbackHandler"></Uploader>
           </template>
         </el-popover>
         <el-dropdown>
@@ -62,7 +62,7 @@
       </div>
       <div class="body-content">
         <router-view v-slot="{ Component }">
-          <component :is="Component"></component>
+          <component :is="Component" @addFile="addFile"></component>
         </router-view>
       </div>
     </div>
@@ -77,6 +77,7 @@ import UpdateAvatar from "@/views/UpdateAvatar.vue";
 import UpdatePassword from "@/views/UpdatePassword.vue";
 import { ref, reactive, getCurrentInstance, nextTick, onMounted, watch } from "vue";
 import { useRouter, useRoute } from "vue-router";
+import Uploader from "./main/Uploader.vue";
 const router = useRouter();
 const route = useRoute();
 const { proxy } = getCurrentInstance();
@@ -86,6 +87,22 @@ const userInfo = ref(proxy.VueCookies.get("userInfo"));
 const api = {
   logout: "/logout"
 }
+
+const showUpLoader = ref(false);
+
+const uploaderRef = ref();
+const addFile = (fileData) => {
+  const {file,filePid} = fileData;
+  showUpLoader.value = true;
+  uploaderRef.value.addFile(file, filePid);
+};
+//上传文件回调
+const uploadCallbackHandler = () => {
+  nextTick(() => {
+    //todo 更新用户空间                                                                                                                                            
+    
+  });
+};
 
 const menus = [
   {
