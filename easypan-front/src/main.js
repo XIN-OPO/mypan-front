@@ -25,6 +25,8 @@ import Request from './utills/Request';
 import Confirm from './utills/Confirm';
 import Utils from './utills/Utils';
 import NoData from './components/NoData.vue';
+import Navigation from './components/Navigation.vue';
+import FolderSelect from './components/FolderSelect.vue';
 
 const app = createApp(App)
 
@@ -36,6 +38,8 @@ app.component("Avatar", Avatar);
 app.component("Table", Table);
 app.component("Icon", Icon);
 app.component("NoData", NoData);
+app.component("Navigation", Navigation);
+app.component("FolderSelect", FolderSelect);
 //配置全局组件
 app.config.globalProperties.Verify = Verify;
 app.config.globalProperties.Message = Message;
