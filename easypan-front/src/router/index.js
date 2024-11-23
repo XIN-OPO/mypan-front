@@ -35,7 +35,7 @@ const router = createRouter({
             needLogin: true,
             menuCode: "share"
           },
-          component: () => import("@/views/share/MyShare.vue")
+          component: () => import("@/views/share/Myshare.vue")
         },
         {
           path: '/recycle',

@@ -28,9 +28,11 @@
         </div>
         <div class="iconfont icon-refresh" @click="loadDataList"></div>
       </div>
-      <!-- 导航 -->
-      <div>全部文件</div>
-
+    </div>
+    <!-- 导航 -->
+    <div class="navigation">
+      <Navigation>
+      </Navigation>
     </div>
     <div class="file-list">
       <Table ref="dataTableRef" :columns="columns" :dataSource="tableData" :fetch="loadDataList" :initFetch="true"
@@ -45,7 +47,7 @@
               <Icon v-if="row.folderType == 1" :fileType="0"></Icon>
             </template>
             <span class="file-name" :title="row.fileName" v-if="!row.showEdit">
-              <span>{{ row.fileName }}</span>
+              <span >{{ row.fileName }}</span>
               <span v-if="row.status == 0" class="transfer-status">转码中</span>
               <span v-if="row.status == 1" class="transfer-status">转码失败</span>
             </span>
@@ -67,7 +69,7 @@
                 <span class="iconfont icon-download" v-if="row.folderType == 0">下载</span>
                 <span class="iconfont icon-edit" @click="editFileName(index)">重命名</span>
                 <span class="iconfont icon-del" @click="delFile(row)">删除</span>
-                <span class="iconfont icon-move">移动</span>
+                <span class="iconfont icon-move" @click="moveFolder(row)">移动</span>
               </template>
             </span>
           </div>
@@ -81,17 +83,19 @@
         </template>
       </Table>
     </div>
+    <FolderSelect ref="folderSelectRef" @folderSelect="moveFolderDone"></FolderSelect>
   </div>
 </template>
 
 <script setup>
 
+import FolderSelect from "@/components/FolderSelect.vue";
 import { ref, reactive, getCurrentInstance, nextTick, onMounted, watch } from "vue";
 import { useRouter, useRoute } from "vue-router";
 const router = useRouter();
 const route = useRoute();
 const { proxy } = getCurrentInstance();
-
+const folderSelectRef = ref();
 
 
 
@@ -294,7 +298,39 @@ const editFileName = (index) => {
     editNameRef.value.focus();
   })
 };
-
+const currentMoveFile = ref({});
+const moveFolder=(data)=>{
+  currentMoveFile.value = data;
+  folderSelectRef.value.showFolderDialog(currentFolder.value.fileId);
+}
+const moveFileBatch = () => {
+  currentMoveFile.value = {};
+  folderSelectRef.value.showFolderDialog(currentFolder.value.fileId);
+};
+const moveFolderDone = async (folderId) => {
+  if (currentFolder.value.fileId == folderId) {
+    proxy.Message.warning("文件正在当前目录，无需移动");
+    return;
+  }
+  let fileIdArray = [];
+  if(currentMoveFile.value.fileId){
+    fileIdArray.push(currentMoveFile.value.fileId);
+  }else{
+    fileIdArray = fileIdArray.concat(selectFileIdList.value);
+  }
+  let result = await proxy.Request({
+    url: api.changeFileFolder,
+    params: {
+      fileIds: fileIdArray.value.join(","),
+      filePid: folderId
+    }
+  });
+  if(!result){
+    return;
+  }
+  folderSelectRef.value.closeFolderDialog();
+  loadDataList();
+}
 </script>
 
 <style lang="scss" scoped>
@@ -328,6 +364,13 @@ body {
 .top-op {
   display: flex;
   align-items: center;
+}
+
+.navigation {
+  padding: 20px;
+  background-color: var(--background-color);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  
 }
 
 .btn,
