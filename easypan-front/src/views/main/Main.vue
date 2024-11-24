@@ -31,12 +31,12 @@
     </div>
     <!-- 导航 -->
     <div class="navigation">
-      <Navigation>
+      <Navigation ref="navigationRef" @navChange="navChange">
         
       </Navigation>
     </div>
     <div class="file-list">
-      <Table ref="dataTableRef" :columns="columns" :dataSource="tableData" :fetch="loadDataList" :initFetch="true"
+      <Table ref="dataTableRef" :columns="columns" :dataSource="tableData" :fetch="loadDataList" :initFetch="false"
         :options="tableOptions" @rowSelected="rowSelected">
         <template #fileName="{ index, row }">
           <div class="file-item" @mouseenter="showOp(row)" @mouseleave="cancelShowOp(row)">
@@ -48,7 +48,7 @@
               <Icon v-if="row.folderType == 1" :fileType="0"></Icon>
             </template>
             <span class="file-name" :title="row.fileName" v-if="!row.showEdit">
-              <span >{{ row.fileName }}</span>
+              <span @click="preview(row)">{{ row.fileName }}</span>
               <span v-if="row.status == 0" class="transfer-status">转码中</span>
               <span v-if="row.status == 1" class="transfer-status">转码失败</span>
             </span>
@@ -116,7 +116,7 @@ const emit = defineEmits(["addFile"])
 const addFile = (fileData) => {
   emit("addFile", { file: fileData.file, filePid: currentFolder.value.fileId });
 };
-const currentFolder = ref({fileId:0});
+const currentFolder = ref({fileId:"0"});
 
 const columns = [
   {
@@ -146,7 +146,8 @@ const loadDataList = async () => {
     pageNo: tableData.value.pageNo || 1,
     pageSize: tableData.value.pageSize || 10,
     fileNameFuzzy: fileNameFuzzy.value,
-    filePid: 0
+    filePid: currentFolder.value.fileId,
+    category: category.value
   };
   if (params.category != "all") {
     delete params.filePid;
@@ -158,6 +159,8 @@ const loadDataList = async () => {
   if (!result) {
     return;
   }
+  console.log(result.data.list);
+  
   tableData.value = result.data;
 };
 
@@ -332,6 +335,20 @@ const moveFolderDone = async (folderId) => {
   folderSelectRef.value.closeFolderDialog();
   loadDataList();
 }
+const navigationRef = ref();
+const preview = (data) => {
+  console.log(111);
+  if (data.folderType == 1) {//如果是文件夹
+    navigationRef.value.openFolder(data);
+  }
+}
+
+const navChange = (data) => {
+  const {categoryId,curFolder} = data;
+  category.value = categoryId;
+  currentFolder.value = curFolder;
+  loadDataList();
+}
 </script>
 
 <style lang="scss" scoped>
@@ -430,8 +447,8 @@ body {
   justify-content: space-between;
   padding: 10px;
   border-bottom: 1px solid var(--border-color);
-  transition: background-color 0.3s;
-
+  transition: background-color 0.3cs;
+  cursor: pointer;
   &:hover {
     background-color: var(--border-color);
   }
