@@ -10,7 +10,7 @@
             </el-button>
           </el-upload>
         </div>
-        <el-button type="success" @click="newFolder" >
+        <el-button type="success" @click="newFolder">
           <span class="iconfont icon-folder-add">新建文件夹</span>
         </el-button>
         <el-button type="danger" :disabled="selectFileIdList.length==0" @click="delFileBatch">
@@ -20,7 +20,7 @@
           <span class="iconfont icon-folder-add">批量移动</span>
         </el-button>
         <div class="search-panel">
-          <el-input clearable placeholder="搜索文件">
+          <el-input clearable placeholder="搜索文件" v-model="fileNameFuzzy" @keyup.enter="search">
             <template #suffix>
               <i class="iconfont icon-search"></i>
             </template>
@@ -32,10 +32,10 @@
     <!-- 导航 -->
     <div class="navigation">
       <Navigation ref="navigationRef" @navChange="navChange">
-        
+
       </Navigation>
     </div>
-    <div class="file-list">
+    <div class="file-list" v-if="tableData.list&&tableData.list.length>0">
       <Table ref="dataTableRef" :columns="columns" :dataSource="tableData" :fetch="loadDataList" :initFetch="false"
         :options="tableOptions" @rowSelected="rowSelected">
         <template #fileName="{ index, row }">
@@ -60,8 +60,7 @@
                 </template>
               </el-input>
               <span :class="['iconfont icon-right1', row.fileNameReal ? '' :'not-allow']"
-                @click="saveNameEdit(index)"
-              ></span>
+                @click="saveNameEdit(index)"></span>
               <span class="iconfont icon-error" @click="cancelNameEdit(index)"></span>
             </div>
             <span class="op">
@@ -84,6 +83,25 @@
         </template>
       </Table>
     </div>
+    <div class="no-data" v-else>
+      <div class="no-data-inner">
+        <Icon iconName="no_data" :width="100" :height="100" fit="fill"></Icon>
+        <div class="tips">当前目录为空，上传文件</div>
+        <div class="op-list">
+          <el-upload :show-file-list="false" :with-credentials="true" :multiple="true" :http-request="addFile"
+            :accept="fileAccept">
+            <div class="op-item">
+              <Icon iconName="file" :width="60"></Icon>
+              <span>上传</span>
+            </div>
+          </el-upload>
+          <div class="op-item" v-if="category=='all'" @click="newFolder">
+            <Icon iconName="folder" :width="60"></Icon>
+            <span>新建文件夹</span>
+          </div>
+        </div>
+      </div>
+    </div>
     <FolderSelect ref="folderSelectRef" @folderSelect="moveFolderDone"></FolderSelect>
   </div>
 </template>
@@ -91,7 +109,9 @@
 <script setup>
 
 import FolderSelect from "@/components/FolderSelect.vue";
-import { ref, reactive, getCurrentInstance, nextTick, onMounted, watch } from "vue";
+import Icon from "@/components/Icon.vue";
+import CategoryInfo from "@/js/CategoryInfo";
+import { ref, reactive, getCurrentInstance, nextTick, onMounted, watch, computed } from "vue";
 import { useRouter, useRoute } from "vue-router";
 const router = useRouter();
 const route = useRoute();
@@ -116,6 +136,22 @@ const emit = defineEmits(["addFile"])
 const addFile = (fileData) => {
   emit("addFile", { file: fileData.file, filePid: currentFolder.value.fileId });
 };
+//添加文件回调
+const reload = () => {
+  console.log("reload");
+  
+  loadDataList();
+  showLoading.value = false;
+}
+
+defineExpose({
+  reload: reload
+});
+
+const fileAccept=computed(()=>{
+  const categoryItem = CategoryInfo[category.value];
+  return categoryItem ? categoryItem.accept : "*";
+});
 const currentFolder = ref({fileId:"0"});
 
 const columns = [
@@ -140,6 +176,13 @@ const columns = [
 const tableData = ref({});
 const fileNameFuzzy = ref();
 const category = ref();
+const showLoading = ref(false);
+
+//搜索
+const search = () => {
+  showLoading.value = true;
+  loadDataList();
+}
 
 const loadDataList = async () => {
   let params = {
@@ -147,20 +190,19 @@ const loadDataList = async () => {
     pageSize: tableData.value.pageSize || 10,
     fileNameFuzzy: fileNameFuzzy.value,
     filePid: currentFolder.value.fileId,
-    category: category.value
+    fileCategory: category.value,
   };
-  if (params.category != "all") {
+  if (params.fileCategory != "all") {
     delete params.filePid;
   }
   let result = await proxy.Request({
     url: api.loadDataList,
-    params: params
+    params: params,
+    showLoading: showLoading.value
   });
   if (!result) {
     return;
   }
-  console.log(result.data.list);
-  
   tableData.value = result.data;
 };
 
@@ -325,7 +367,7 @@ const moveFolderDone = async (folderId) => {
   let result = await proxy.Request({
     url: api.changeFileFolder,
     params: {
-      fileIds: fileIdArray.value.join(","),
+      fileIds: fileIdArray.join(","),
       filePid: folderId
     }
   });

@@ -296,6 +296,7 @@ const uploadFile = async (uid, chunkIndex) => {
     line-height: 40px;
     padding: 0px 10px;
     font-size: 15px;
+    color: #000;
     .tips{
         font-size: 13px;
         color: #999;
@@ -304,8 +305,8 @@ const uploadFile = async (uid, chunkIndex) => {
   .file-list{
     overflow: auto;
     padding: 10px 0px;
-    min-height: calc(100vh / 2);
-    max-height: calc(100vh - 120px);
+    // min-height: calc(100vh / 2);
+    //max-height: calc(100vh - 120px);
     .file-item{
         padding: 3px 10px;
         border-bottom: 1px solid #ccc;
@@ -321,7 +322,8 @@ const uploadFile = async (uid, chunkIndex) => {
     .upload-panel{
         flex:1;
         .file-name{
-            color: #333;
+            color: #d9acac;
+            font-size: 14px;
         }
         .upload-status{
             display: flex;

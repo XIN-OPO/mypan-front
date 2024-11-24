@@ -4,20 +4,20 @@
           :show="dialogConfig.show"
           :title="dialogConfig.title"
           :buttons="dialogConfig.buttons"
-          width="400px"
+          width="800px"
           :showCancel="false"
           @close="dialogConfig.show = false">
             <div class="navigation-panel">
-                
-            </div>
+                <Navigation ref="navigationRef"  @navChange="navChange" :watchPath="false"></Navigation>
+            </div> 
             <div class="folder-list" v-if="folderList.length>0">
                 <div class="folder-item" v-for="item in folderList" @click="selectFolder(item)">
                     <Icon :fileType="0"></Icon>
                     <span class="file-name">{{item.fileName}}</span>
                 </div>
             </div>
-            <div v-else>
-                移动<span>{{currentFile.fileName}}</span>
+            <div v-else class="tips">
+                移动到<span>{{currentFolder.fileName}}</span>
             </div>
             <div class="tips">
                 <span>点击文件夹进行选择</span>
@@ -29,6 +29,7 @@
 <script setup>
 import { ref, reactive, getCurrentInstance, nextTick } from "vue"
 import Icon from "./Icon.vue";
+import Navigation from "./Navigation.vue";
 const { proxy } = getCurrentInstance();
 
 const api = {
@@ -58,6 +59,8 @@ const folderList = ref([]);
 
 const currentFileIds = ref({});
 const currentFile = ref({});
+const currentFolder = ref({});
+const navigationRef = ref();
 const loadAllFolder=async()=>{
     let result = await proxy.Request({
         url:api.loadAllFolder,
@@ -88,13 +91,21 @@ defineExpose({
 
 //选择目录
 const selectFolder = (folder) => {
-    
+    navigationRef.value.openFolder(folder);
 };
 
 //确定选择目录
 const emit=defineEmits(["folderSelect"]);
 const folderSelect =()=>{
     emit("folderSelect",filePid.value);//把选择的目录传到父组件
+}
+
+//导航改变回调
+const navChange = (data) => {
+    const {curFolder} = data;
+    currentFolder.value = curFolder;
+    filePid.value = curFolder.fileId;
+    loadAllFolder();
 }
 </script>
 

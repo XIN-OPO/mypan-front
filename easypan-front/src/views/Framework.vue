@@ -6,8 +6,8 @@
         <div class="name">MyPan</div>
       </div>
       <div class="right-panel">
-        <el-popover :width="800" trigger="click" v-model:visible="showUpLoader" :offset="20" transition="none" :hide-after="0"
-          :popper-style="{ padding: '0px' }">
+        <el-popover :width="800" trigger="click" v-model:visible="showUpLoader" :offset="20" transition="none"
+          :hide-after="0" :popper-style="{ padding: '0px' }">
           <template #reference>
             <span class="iconfont icon-transfer"></span>
           </template>
@@ -18,7 +18,7 @@
         <el-dropdown>
           <div class="user-info">
             <div class="avatar">
-              <Avatar :userId="userInfo.userId" :avatar="userInfo.avatar" :timestamp="timestamp" ></Avatar>
+              <Avatar :userId="userInfo.userId" :avatar="userInfo.avatar" :timestamp="timestamp"></Avatar>
             </div>
             <span class="nick-name">{{ userInfo.nickName }}</span>
           </div>
@@ -62,7 +62,7 @@
       </div>
       <div class="body-content">
         <router-view v-slot="{ Component }">
-          <component :is="Component" @addFile="addFile"></component>
+          <component ref="routerViewRef" :is="Component" @addFile="addFile"></component>
         </router-view>
       </div>
     </div>
@@ -97,11 +97,13 @@ const addFile = (fileData) => {
   showUpLoader.value = true;
   uploaderRef.value.addFile(file, filePid);
 };
+
+const routerViewRef = ref();
 //上传文件回调
 const uploadCallbackHandler = () => {
   nextTick(() => {
     //todo 更新用户空间                                                                                                                                            
-    
+    routerViewRef.value.reload();
   });
 };
 

@@ -12,7 +12,9 @@ import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
 import '@/assets/icon/iconfont.css'
 import '@/assets/base.scss'
+import '@/assets/file_list.scss'
 import VueCookies from 'vue-cookies'
+import CategoryInfo from '@/js/CategoryInfo';
 
 //自定义组件
 import Dialog from './components/Dialog.vue';

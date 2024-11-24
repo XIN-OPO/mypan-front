@@ -5,7 +5,7 @@
         <el-divider direction="vertical" />
     </template>
     <span v-if="folderList.length==0" class="all-file">全部文件</span>
-    <span v-if="folderList.length>0" class="link" >全部文件</span>
+    <span v-if="folderList.length>0" class="link" @click="setCurFolder(-1)">全部文件</span>
     <template v-for="(item,index) in folderList">
         <span class="iconfont icon-right"></span>
         <span class="link" v-if="index<folderList.length-1" @click="setCurFolder(index)">{{item.fileName}}</span>
@@ -56,8 +56,6 @@ const folderList = ref([]);
 const currentFolder = ref({ fileId: "0" });
  
 const openFolder = (data) => {
-    console.log("openFolder");
-    
     const { fileId, fileName } = data;
     const folder = {
         fileName: fileName,
@@ -72,15 +70,38 @@ defineExpose({
     openFolder,
 })
 
+//返回上一级
+const backParent = () => {
+    let curIndex = null;
+    for (let i = 0; i < folderList.value.length; i++){
+        if(folderList.value[i].fileId==currentFolder.value.fileId){
+            curIndex = i;
+            break;
+        }
+    }
+    if(curIndex==null){
+        return;
+    }
+    setCurFolder(curIndex-1);
+}
+
 //点击导航设置当前目录
 const setCurFolder = (index) => {
-    currentFolder.value = folderList.value[index];
+    if (index == -1) {
+        //返回全部
+        currentFolder.value = { fileId: "0" };
+        folderList.value = [];
+    } else {
+        currentFolder.value = folderList.value[index];
+        folderList.value.splice(index+1,folderList.value.length);
+    }
     setPath();
 }
 
 const setPath = () => {
     if (!props.watchPath) {
         //设置不监听路由回调方法 
+        doCallback();
         return;
     }
     let pathArray = [];
