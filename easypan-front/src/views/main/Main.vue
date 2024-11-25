@@ -108,7 +108,7 @@
 </template>
 
 <script setup>
-import Preview from '@/components/preview/Preview.vue';
+
 import FolderSelect from "@/components/FolderSelect.vue";
 import Icon from "@/components/Icon.vue";
 import CategoryInfo from "@/js/CategoryInfo";

@@ -1,24 +1,37 @@
 <template>
     <PreviewImage ref="imageViewRef" :imageList="[imageUrl]" v-if="fileInfo.fileCategary == 3"></PreviewImage>
+    <Window ref="windowRef" :show="showWindow" :width="fileInfo.fileCategary ==1?1500:800" 
+    :title="fileInfo.fileName" :align="fileInfo.fileCategary ==1?'center':'top'" @close="closeWindow"
+    v-else
+    ></Window>
 </template>
-
+ 
 <script setup>
 import PreviewImage from './PreviewImage.vue';
 import { ref, getCurrentInstance, computed, nextTick } from "vue"
 const { proxy } = getCurrentInstance();
 const imageViewRef = ref();
 const fileInfo = ref({});
+const windowRef = ref();
+
 const imageUrl = computed(() => {
     return proxy.globalInfo.imageUrl + fileInfo.value.fileCover.replaceAll("_.", ".");
 });
-
+const showWindow = ref(false);
 const showPreview = (data,showPart) => {
     fileInfo.value = data;
     if (data.fileCategary == 3) { 
         nextTick(() => {
             imageViewRef.value.showImageViewer(0);
         });
+    }else{
+        showWindow.value = true;
     }
+}
+
+
+const closeWindow = () => {
+    showWindow.value = false
 }
 const FILE_URL_MAP = {
     0: {
