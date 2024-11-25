@@ -346,7 +346,7 @@ getUseSpace();
 
 .body {
   display: flex;
-  height: calc(100vh - 56px);
+  height: 100vh;
 
   .left-sider {
     border-right: 1px solid #ffe4b5; /* 浅暖色 */
@@ -354,7 +354,7 @@ getUseSpace();
     display: flex;
     flex-direction: column;
     width: 240px;
-
+    height: 100vh;
     .menu-list {
       width: 80px;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);

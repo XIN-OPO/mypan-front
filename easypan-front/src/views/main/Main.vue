@@ -37,7 +37,7 @@
     </div>
     <div class="file-list" v-if="tableData.list&&tableData.list.length>0">
       <Table ref="dataTableRef" :columns="columns" :dataSource="tableData" :fetch="loadDataList" :initFetch="false"
-        :options="tableOptions" @rowSelected="rowSelected">
+        :options="tableOptions" @rowSelected="rowSelected"> 
         <template #fileName="{ index, row }">
           <div class="file-item" @mouseenter="showOp(row)" @mouseleave="cancelShowOp(row)">
             <template v-if="(row.fileType == 3 || row.fileType == 1) && row.status == 2">
@@ -65,7 +65,7 @@
             </div>
             <span class="op">
               <template v-if="row.showOp && row.fileId && row.status == 2">
-                <span class="iconfont icon-share1">分享</span>
+                <span class="iconfont icon-share1" @click="share(row)">分享</span>
                 <span class="iconfont icon-download" v-if="row.folderType == 0" @click="downloadFile(row)">下载</span>
                 <span class="iconfont icon-edit" @click="editFileName(index)">重命名</span>
                 <span class="iconfont icon-del" @click="delFile(row)">删除</span>
@@ -104,6 +104,7 @@
     </div>
     <FolderSelect ref="folderSelectRef" @folderSelect="moveFolderDone"></FolderSelect>
     <Preview ref="previewRef"></Preview>
+    <ShareFile ref="shareFileRef"></ShareFile>
   </div>
 </template>
 
@@ -114,6 +115,7 @@ import Icon from "@/components/Icon.vue";
 import CategoryInfo from "@/js/CategoryInfo";
 import { ref, reactive, getCurrentInstance, nextTick, onMounted, watch, computed } from "vue";
 import { useRouter, useRoute } from "vue-router";
+import ShareFile from "./ShareFile.vue";
 const router = useRouter();
 const route = useRoute();
 const { proxy } = getCurrentInstance();
@@ -178,6 +180,7 @@ const category = ref();
 const showLoading = ref(false);
 
 //搜索
+//就是刷新列表的时候把搜索框里面的内容更新一下就好
 const search = () => {
   showLoading.value = true;
   loadDataList();
@@ -409,6 +412,11 @@ const downloadFile = async (data) => {
   }
   window.location.href = api.download+"/"+result.data;
 }
+
+const shareFileRef = ref();
+const share = (row) => {
+  shareFileRef.value.show(row);
+}
 </script>
 
 <style lang="scss" scoped>
@@ -434,7 +442,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1rem;
+  padding: 12px;
   background-color: var(--background-color);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
@@ -445,10 +453,10 @@ body {
 }
 
 .navigation {
-  padding: 20px;
+  padding: 2px;
   background-color: var(--background-color);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  
+  text-align: center;
 }
 
 .btn,
@@ -496,7 +504,7 @@ body {
 }
 
 .file-list {
-  padding: 1rem;
+  padding: 10px;
   height: calc(100vh - 100px); // 根据顶部高度调整
   overflow: hidden; // 禁止滚动条
 }
@@ -505,9 +513,9 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px;
+  padding: 5px;
   border-bottom: 1px solid var(--border-color);
-  transition: background-color 0.3cs;
+  //transition: background-color 0.3cs;
   cursor: pointer;
   &:hover {
     background-color: var(--border-color);
@@ -529,11 +537,11 @@ body {
     .iconfont {
       color: var(--primary-color);
       cursor: pointer;
-      transition: color 0.3s, transform 0.3s;
+      //transition: color 0.3s, transform 0.3s;
 
       &:hover {
         color: var(--secondary-color);
-        transform: scale(1.1);
+        //transform: scale(1.1);
       }
     }
 

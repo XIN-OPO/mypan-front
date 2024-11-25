@@ -20,8 +20,9 @@
 <script setup>
 import { ref, reactive, getCurrentInstance, nextTick, onMounted } from "vue"
 import useClipboard from 'vue-clipboard3';
-const { proxy } = getCurrentInstance();
 const { toClipboard } = useClipboard();
+const { proxy } = getCurrentInstance();
+
 const encode = ref('utf-8');
 const txtContent = ref('');
 const blobResult = ref();
