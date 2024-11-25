@@ -1,12 +1,13 @@
 <template>
     <PreviewImage ref="imageViewRef" :imageList="[imageUrl]" v-if="fileInfo.fileCategary == 3"></PreviewImage>
-    <Window ref="windowRef" :show="showWindow" :width="fileInfo.fileCategary ==1?1500:600" 
+    <Window ref="windowRef" :show="showWindow" :width="fileInfo.fileCategary ==1?1500:800" 
     :title="fileInfo.fileName" :align="fileInfo.fileCategary ==1?'center':'top'" @close="closeWindow"
     v-else
     >
         <PreviewVideo v-if="fileInfo.fileCategary == 1" :url="url"></PreviewVideo>
         <PreviewDoc v-if="fileInfo.fileType == 5" :url="url"></PreviewDoc>
         <PreviewExcel v-if="fileInfo.fileType == 6" :url="url"></PreviewExcel>
+        <PreviewPdf v-if="fileInfo.fileType == 4" :url="url"></PreviewPdf>
     </Window>
 </template>
  
@@ -15,6 +16,7 @@ import PreviewImage from './PreviewImage.vue';
 import PreviewVideo from './PreviewVideo.vue';
 import PreviewDoc from './PreviewDoc.vue';
 import PreviewExcel from './PreviewExcel.vue';
+import PreviewPdf from './PreviewPdf.vue';
 import { ref, getCurrentInstance, computed, nextTick } from "vue"
 const { proxy } = getCurrentInstance();
 const imageViewRef = ref();
