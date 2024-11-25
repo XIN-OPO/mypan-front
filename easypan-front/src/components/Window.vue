@@ -76,7 +76,7 @@ onUnmounted(() => {
         top: 0;
         left: 0;
         width: 100%;
-        height: calc(100vh);
+        height: 100%;
         z-index: 200;
         background-color: rgba(0, 0, 0, 0.5);
         opacity: 0.5;
@@ -114,11 +114,11 @@ onUnmounted(() => {
             font-weight:bold;
         }
         .content-body{
-            height: calc(100vh - 41px);
+            height: 100%;
             display: flex;
             align-items: center;
             justify-content: center;
-            overflow: hidden; 
+            overflow: hidden;   
         }
     }
 }
