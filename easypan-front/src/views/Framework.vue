@@ -56,7 +56,17 @@
           <div class="tips" v-if="currentMenu && currentMenu.tips">{{ currentMenu.tips }}</div>
           <div class="space-info">
             <div>空间使用</div>
-            <div class="percent"></div>
+            <div class="percent">
+              <el-progress :percentage="Math.floor((useSpaceInfo.useSpace / useSpaceInfo.totalSpace) * 10000) / 100"
+                color="#4094ff"></el-progress>
+            </div>
+            <div class="space-use">
+              <div class="use">
+                {{ proxy.Utils.sizeToStr(useSpaceInfo.useSpace) }} / {{ proxy.Utils.sizeToStr(useSpaceInfo.totalSpace)
+                }}
+              </div>
+              <div class="iconfont icon-refresh" @click="getUseSpace"></div>
+            </div>
           </div>
         </div>
       </div>
@@ -86,7 +96,8 @@ const timestamp = ref(0);
 const userInfo = ref(proxy.VueCookies.get("userInfo"));
 
 const api = {
-  logout: "/logout"
+  logout: "/logout",
+  getUseSpace: "/getUseSpace"
 }
 
 const showUpLoader = ref(false);
@@ -104,6 +115,7 @@ const uploadCallbackHandler = () => {
   nextTick(() => {
     //todo 更新用户空间                                                                                                                                            
     routerViewRef.value.reload();
+    getUseSpace();
   });
 };
 
@@ -250,10 +262,24 @@ const logout = async () => {
       proxy.VueCookies.remove("userInfo");
       router.push("/login");
     } else {
-    return;
+      return;
     }
   });
+};
+
+//使用空间
+const useSpaceInfo = ref({ useSpace: 0, totalSpace: 1 });
+const getUseSpace = async () => {
+  let result = await proxy.Request({
+    url: api.getUseSpace,
+    showLoading: false,
+  });
+  if (result) {
+    useSpaceInfo.value = result.data;
   }
+  console.log(useSpaceInfo.value);
+};
+getUseSpace();
 </script>
 
 <style lang="scss" scoped>
@@ -387,27 +413,7 @@ const logout = async () => {
         .text {
           font-size: 14px;
         }
-      }
-
-      .active {
-        background: #ffdab9; /* 浅暖色 */
-
-        .iconfont {
-          color: #ff8c00; /* 橙色 */
-        }
-
-        .text {
-          color: #ff8c00; /* 橙色 */
-        }
-      }
-
-      .tips {
-        margin-top: 10px;
-        color: #cc5500; /* 深橙色 */
-        font-size: 13px;
-      }
-
-      .space-info {
+        .space-info {
         position: absolute;
         bottom: 10px;
         width: 100%;
@@ -434,6 +440,55 @@ const logout = async () => {
           }
         }
       }
+      }
+
+      .active {
+        background: #ffdab9; /* 浅暖色 */
+
+        .iconfont {
+          color: #ff8c00; /* 橙色 */
+        }
+
+        .text {
+          color: #ff8c00; /* 橙色 */
+        }
+      }
+
+      .tips {
+        margin-top: 10px;
+        color: #cc5500; /* 深橙色 */
+        font-size: 13px;
+      }
+      .space-info {
+        position: absolute;
+        bottom: 10px;
+        width: 12%;
+        padding: 0 5px;
+      
+              .percent {
+                padding-right: 10px;
+              }
+      
+              .space-use {
+                margin-top: 5px;
+                color: #cc5500;
+                /* 深橙色 */
+                display: flex;
+                justify-content: space-around;
+      
+                .use {
+                  flex: 1;
+                }
+      
+                .iconfont {
+                  cursor: pointer;
+                  margin-top: 20px;
+                  color: #ff8c00;
+                  /* 橙色 */
+                }
+              }
+            }
+      
     }
   }
 

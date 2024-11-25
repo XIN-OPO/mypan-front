@@ -29,6 +29,7 @@ import Utils from './utills/Utils';
 import NoData from './components/NoData.vue';
 import Navigation from './components/Navigation.vue';
 import FolderSelect from './components/FolderSelect.vue';
+import Preview from './components/preview/Preview.vue';
 
 const app = createApp(App)
 
@@ -42,6 +43,7 @@ app.component("Icon", Icon);
 app.component("NoData", NoData);
 app.component("Navigation", Navigation);
 app.component("FolderSelect", FolderSelect);
+app.component("Preview", Preview);
 //配置全局组件
 app.config.globalProperties.Verify = Verify;
 app.config.globalProperties.Message = Message;

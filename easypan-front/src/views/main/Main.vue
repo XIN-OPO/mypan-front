@@ -103,11 +103,12 @@
       </div>
     </div>
     <FolderSelect ref="folderSelectRef" @folderSelect="moveFolderDone"></FolderSelect>
+    <Preview ref="previewRef"></Preview>
   </div>
 </template>
 
 <script setup>
-
+import Preview from '@/components/preview/Preview.vue';
 import FolderSelect from "@/components/FolderSelect.vue";
 import Icon from "@/components/Icon.vue";
 import CategoryInfo from "@/js/CategoryInfo";
@@ -117,8 +118,6 @@ const router = useRouter();
 const route = useRoute();
 const { proxy } = getCurrentInstance();
 const folderSelectRef = ref();
-
-
 
 const api = {
   loadDataList: "/file/loadDataList",
@@ -138,14 +137,14 @@ const addFile = (fileData) => {
 };
 //添加文件回调
 const reload = () => {
-  console.log("reload");
-  
-  loadDataList();
   showLoading.value = false;
+  console.log("reload");
+  loadDataList();
+  
 }
 
 defineExpose({
-  reload: reload
+  reload
 });
 
 const fileAccept=computed(()=>{
@@ -377,12 +376,20 @@ const moveFolderDone = async (folderId) => {
   folderSelectRef.value.closeFolderDialog();
   loadDataList();
 }
+const previewRef = ref();
 const navigationRef = ref();
+
 const preview = (data) => {
-  console.log(111);
   if (data.folderType == 1) {//如果是文件夹
     navigationRef.value.openFolder(data);
+    return;
   }
+  //文件
+  if(data.status!=2){
+    proxy.Message.warning("文件转码中，请稍后再试");
+    return;
+  }
+  previewRef.value.showPreview(data,0);
 }
 
 const navChange = (data) => {
