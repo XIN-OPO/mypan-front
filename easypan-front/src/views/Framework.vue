@@ -160,8 +160,8 @@ const menus = [
       {
         icon: "more",
         name: "其他",
-        category: "more",
-        path: "/main/more"
+        category: "others",
+        path: "/main/others"
       }
     ]
   },

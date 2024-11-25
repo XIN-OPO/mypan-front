@@ -71,54 +71,99 @@ onUnmounted(() => {
 </script>
 
 <style lang="scss" scoped>
-.window{
-    .window-mask{
+.window {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+
+    .window-mask {
+        position: fixed;
         top: 0;
         left: 0;
-        width: 100%;
-        height: 100%;
-        z-index: 200;
-        background-color: rgba(0, 0, 0, 0.5);
-        opacity: 0.5;
-        position: fixed;
+        width: 100vw;
+        height: 100vh;
+        z-index: 9998;
+        background-color: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(1px);
+        pointer-events: auto;
     }
-    .close{
-        z-index: 202;
-        cursor: pointer;
-        position: absolute;
-        top:40px;
-        right:30px;
+
+    .close {
+        position: fixed;
+        top: 40px;
+        right: 30px;
         width: 44px;
         height: 44px;
-        background:#606266;
+        background: rgba(0, 0, 0, 0.2);
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
-        .icon-font{
+        cursor: pointer;
+        z-index: 10000;
+        transition: all 0.3s ease;
+
+        &:hover {
+            background: rgba(0, 0, 0, 0.4);
+            transform: rotate(90deg);
+        }
+
+        .icon-font {
             font-size: 20px;
             color: #fff;
-            z-index: 10000;
         }
     }
-    .window-content{
-        z-index: 201;
-        position: absolute;
-        top: 0;
-        left: 0;
+
+    .window-content {
+        position: relative;
+        z-index: 9999;
         background: #fff;
-        .title{
+        border-radius: 12px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+        max-width: 90%;
+        max-height: 95vh;
+        pointer-events: auto;
+        animation: modalFadeIn 0.3s ease;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+
+        .title {
+            padding: 16px 24px;
             text-align: center;
-            line-height: 40px;
-            border-bottom: 1px solid #e4e7ed;
-            font-weight:bold;
+            line-height: 24px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 1px solid #ebeef5;
+            background: #fff;
+            border-radius: 12px 12px 0 0;
+            flex-shrink: 0;
         }
-        .content-body{
-            height: 100%;
+
+        .content-body {
+            padding: 16px;
+            flex: 1;
+            min-height: 100px;
+            max-height: calc(95vh - 57px);
+            overflow: auto;
             display: flex;
             align-items: center;
             justify-content: center;
-            overflow: hidden;   
+            scrollbar-gutter: stable;
+
+            video {
+                max-height: calc(95vh - 89px);
+                width: auto;
+                object-fit: contain;
+                vertical-align: middle;
+            }
         }
     }
 }
