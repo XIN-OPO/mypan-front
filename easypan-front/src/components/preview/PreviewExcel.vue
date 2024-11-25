@@ -35,17 +35,18 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
-.table-info{
+.table-info {
     width: 100%;
-    height: 100%;
+    height: 100vh;
     padding: 10px;
-    :deep table{
-        width:100%;
+    overflow: auto;
+
+    :deep table {
+        width: 100%;
         border-collapse: collapse;
         border: 1px solid #000;
-        td{
+        td {
             border: 1px solid #000;
-            border-collapse: collapse;
             padding: 5px;
             text-align: center;
             height: 30px;

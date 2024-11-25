@@ -15,6 +15,9 @@ import '@/assets/base.scss'
 import '@/assets/file_list.scss'
 import VueCookies from 'vue-cookies'
 import CategoryInfo from '@/js/CategoryInfo';
+import HighLightPlugin from '@highlightjs/vue-plugin';
+import 'highlight.js/styles/monokai-sublime.css';
+import 'highlight.js/lib/common';
 
 //自定义组件
 import Dialog from './components/Dialog.vue';
@@ -35,7 +38,8 @@ import Window from './components/Window.vue';
 const app = createApp(App)
 
 app.use(createPinia())
-app.use(ElementPlus)
+app.use(ElementPlus )
+app.use(HighLightPlugin)
 app.use(router)
 app.component("Dialog", Dialog);
 app.component("Avatar", Avatar);

@@ -8,6 +8,7 @@
         <PreviewDoc v-if="fileInfo.fileType == 5" :url="url"></PreviewDoc>
         <PreviewExcel v-if="fileInfo.fileType == 6" :url="url"></PreviewExcel>
         <PreviewPdf v-if="fileInfo.fileType == 4" :url="url"></PreviewPdf>
+        <PreviewTxt v-if="fileInfo.fileType == 7 || fileInfo.fileType == 8" :url="url"></PreviewTxt>
     </Window>
 </template>
  
@@ -17,6 +18,7 @@ import PreviewVideo from './PreviewVideo.vue';
 import PreviewDoc from './PreviewDoc.vue';
 import PreviewExcel from './PreviewExcel.vue';
 import PreviewPdf from './PreviewPdf.vue';
+import PreviewTxt from './PreviewTxt.vue';
 import { ref, getCurrentInstance, computed, nextTick } from "vue"
 const { proxy } = getCurrentInstance();
 const imageViewRef = ref();
