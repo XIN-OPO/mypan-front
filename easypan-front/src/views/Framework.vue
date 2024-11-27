@@ -72,7 +72,7 @@
       </div>
       <div class="body-content">
         <router-view v-slot="{ Component }">
-          <component ref="routerViewRef" :is="Component" @addFile="addFile"></component>
+          <component ref="routerViewRef" :is="Component" @addFile="addFile" @refresh="getUseSpace"></component>
         </router-view>
       </div>
     </div>
@@ -116,7 +116,7 @@ const uploadCallbackHandler = () => {
     //todo 更新用户空间                                                                                                                                            
     routerViewRef.value.reload();
     getUseSpace();
-  });
+  }); 
 };
 
 const menus = [

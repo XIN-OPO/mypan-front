@@ -28,6 +28,9 @@
             </span>
           </div>
         </template>
+        <template #expireTime="{ index, row }">
+          {{ row.validType==3? '永久':row.expireTime }}
+        </template>
       </Table>
     </div>
   </div>
@@ -122,7 +125,7 @@ const cancelShareBatch = () => {
     return;
   }
   cancelShareList.value = selectFileIdList.value;
-  
+  cancelShareDone();
 };
 const cancelShareDone = () => {
   proxy.Confirm("确定取消分享吗？", async () => {
