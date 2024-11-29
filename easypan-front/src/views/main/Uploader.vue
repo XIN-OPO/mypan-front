@@ -1,70 +1,64 @@
 <template>
-  <div class="uploader-panel">
-    <div class="uploader-title">
-        <span>上传任务</span>
-        <span class="tips">(仅展示本次上传内容)</span>
-    </div>
-    <div class="file-list">
-        <div v-for="(item,index) in fileList" class="file-item">
-            <div class="upload-panel">
-                <div class="file-name">
-                    {{ item.fileName }}
-                </div>
-                <div class="progress">
-                    <el-progress :percentage="item.uploadProgress" 
-                    v-if="item.status == STATUS.uploading.value || 
+    <div class="uploader-panel">
+        <div class="uploader-title">
+            <span>上传任务</span>
+            <span class="tips">(仅展示本次上传内容)</span>
+        </div>
+        <div class="file-list">
+            <div v-for="(item,index) in fileList" class="file-item">
+                <div class="upload-panel">
+                    <div class="file-name">
+                        {{ item.fileName }}
+                    </div>
+                    <div class="progress">
+                        <el-progress :percentage="item.uploadProgress" v-if="item.status == STATUS.uploading.value || 
                       item.status == STATUS.upload_seconds.value || 
-                      item.status == STATUS.upload_finish.value"
-                    />
+                      item.status == STATUS.upload_finish.value" />
+                    </div>
+                    <div class="upload-status">
+                        <!-- 图标 -->
+                        <span :class="['iconfont','icon-'+STATUS[item.status].icon]"
+                            :style="{color:STATUS[item.status].color}"></span>
+                        <!-- 状态 -->
+                        <span class="status" :style="{color:STATUS[item.status].color}">
+                            {{ item.status == "fail" ? item.errorMsg : STATUS[item.status].desc }}
+                        </span>
+                        <!-- 上传信息 -->
+                        <span class="upload-info" v-if="item.status == STATUS.uploading.value">
+                            {{ proxy.Utils.sizeToStr(item.uploadSize) }} / {{ proxy.Utils.sizeToStr(item.totalSize) }}
+                        </span>
+                        <!-- 上传速度 -->
+                        <span class="upload-speed" v-if="item.status == STATUS.uploading.value">
+                            {{ proxy.Utils.sizeToStr(item.uploadSpeed) }}
+                        </span>
+                    </div>
                 </div>
-                <div class="upload-status">
-                    <!-- 图标 -->
-                    <span :class="['iconfont','icon-'+STATUS[item.status].icon]" :style="{color:STATUS[item.status].color}"></span>
-                    <!-- 状态 -->
-                    <span class="status" :style="{color:STATUS[item.status].color}">
-                        {{ item.status == "fail" ? item.errorMsg : STATUS[item.status].desc }}
-                    </span>
-                    <!-- 上传信息 -->
-                    <span class="upload-info" v-if="item.status == STATUS.uploading.value">
-                        {{ proxy.Utils.sizeToStr(item.uploadSize) }} / {{ proxy.Utils.sizeToStr(item.totalSize) }}
-                    </span>
-                    <!-- 上传速度 -->
-                    <span class="upload-speed" v-if="item.status == STATUS.uploading.value">
-                        {{ proxy.Utils.sizeToStr(item.uploadSpeed) }}
-                    </span>
-                </div> 
-            </div>
-            <div class="op">
-                <!-- md5 -->
-                 <el-progress type="circle" :percentage="item.md5Progress" 
-                 v-if="item.status == STATUS.init.value"
-                 :width="50"
-                 />
-                 <div class="op-btn">
-                    <span v-if="item.status == STATUS.uploading.value">
-                        <Icon :width="28" class="btn-item" iconName="upload" v-if="item.pause" title="上传"
-                        @click="startUpload(item.uid)"
-                        ></Icon>
-                        <Icon :width="28" class="btn-item" iconName="pause" v-else title="暂停"
-                        @click="pauseUpload(item.uid)"
-                        ></Icon>
-                    </span>
-                    <Icon :width="28" class="del btn-item" iconName="del" title="删除" v-if="item.status != STATUS.init.value && item.status != STATUS.upload_finish.value
-                    || item.status == STATUS.upload_seconds.value"
-                    @click="delUpload(item.uid)"
-                    ></Icon>
-                    <Icon :width="28" class="clean btn-item" iconName="clean" title="清除" v-if="item.status == STATUS.upload_finish.value
+                <div class="op">
+                    <!-- md5 -->
+                    <el-progress type="circle" :percentage="item.md5Progress" v-if="item.status == STATUS.init.value"
+                        :width="50" />
+                    <div class="op-btn">
+                        <span v-if="item.status == STATUS.uploading.value">
+                            <Icon :width="28" class="btn-item" iconName="pause" title="暂停"
+                                @click="pauseUpload(item.uid)"></Icon>
+                        </span>
+                        <span v-if="item.status == STATUS.pause.value">
+                            <Icon :width="28" class="btn-item" iconName="upload" title="上传"
+                                @click="startUpload(item.uid)"></Icon>
+                        </span>
+                        <Icon :width="28" class="del btn-item" iconName="del" title="删除" v-if="item.status != STATUS.init.value && item.status != STATUS.upload_finish.value
+                    || item.status == STATUS.upload_seconds.value" @click="delUpload(item.uid)"></Icon>
+                        <Icon :width="28" class="clean btn-item" iconName="clean" title="清除" v-if="item.status == STATUS.upload_finish.value
                     || item.status == STATUS.fail.value || item.status == STATUS.upload_seconds.value"
-                    @click="cleanUpload(item.uid)"
-                    ></Icon>
-                 </div>
+                            @click="cleanUpload(item.uid)"></Icon>
+                    </div>
+                </div>
             </div>
-        </div>
-        <div v-if="fileList.length == 0" class="empty-file">
-            <NoData msg="暂无上传任务"/>
+            <div v-if="fileList.length == 0" class="empty-file">
+                <NoData msg="暂无上传任务" />
+            </div>
         </div>
     </div>
-  </div>
 </template>
 
 <script  setup>
@@ -157,7 +151,6 @@ const addFile = async (file, filePid) => {
     if (md5FileUid==null) {
         return; 
     }
-    
     uploadFile(md5FileUid);
 };
 
@@ -287,6 +280,49 @@ const uploadFile = async (uid, chunkIndex) => {
 
     }
 };
+
+const startUpload = (uid) => {
+    let file = getFileByUid(uid);
+    if (file) {
+        file.pause = false;
+        if (file.status === STATUS.pause.value) {
+            file.status = STATUS.uploading.value;
+            uploadFile(uid, file.chunkIndex); // 从暂停的分片继续上传
+        }
+    }
+};
+
+const pauseUpload = (uid) => {
+    let file = getFileByUid(uid);
+    if (file) {
+        file.pause = true;
+        file.status = STATUS.pause.value;
+        // 记录当前上传的分片索引
+        file.chunkIndex = Math.floor(file.uploadSize / chunkSize);
+    }
+};
+
+const delUpload = (uid) => {
+  let file = getFileByUid(uid);
+  if (file) {
+    delList.value.push(uid);
+    let index = fileList.value.findIndex(item => item.uid === uid);
+    if (index !== -1) {
+      fileList.value.splice(index, 1);
+    }
+  }
+};
+
+const cleanUpload = (uid) => {
+  let file = getFileByUid(uid);
+  if (file) {
+    let index = fileList.value.findIndex(item => item.uid === uid);
+    if (index !== -1) {
+      fileList.value.splice(index, 1);
+    }
+  }
+};
+
 </script>
 
 <style lang="scss" scoped>

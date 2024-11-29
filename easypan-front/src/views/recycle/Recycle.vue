@@ -71,7 +71,7 @@ const columns = [
 
 const tableData = ref({});
 const tableOptions = ref({
-  extraHeight: 100,
+  extHeight: 100,
   selectType: "checkbox"
 });
 

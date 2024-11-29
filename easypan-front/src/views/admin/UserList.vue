@@ -1,6 +1,8 @@
 <template>
   <div>
-    userlist
+    <div class="top-panel">
+
+    </div>
   </div>
 </template>
 
@@ -9,5 +11,8 @@
 </script>
 
 <style lang="scss" scoped>
+.top-panel{
+  margin: 10px;
+}
 
 </style>

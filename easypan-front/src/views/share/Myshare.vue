@@ -5,7 +5,7 @@
         <span class="iconfont icon-cancel"></span>取消分享
       </el-button>
     </div>
-    <div class="file-list">
+    <div class="file-list" v-if="tableData.list && tableData.list.length > 0">
       <Table ref="dataTableRef" :columns="columns" :dataSource="tableData" :fetch="loadDataList" :initFetch="false"
         :options="tableOptions" @rowSelected="rowSelected">
         <template #fileName="{ index, row }">
@@ -29,7 +29,7 @@
           </div>
         </template>
         <template #expireTime="{ index, row }">
-          {{ row.validType==3? '永久':row.expireTime }}
+          {{ row.validType==3? "永久":row.expireTime }}
         </template>
       </Table>
     </div>
@@ -37,7 +37,7 @@
 </template>
 
 <script setup>
-import { ref, getCurrentInstance, onMounted } from "vue"
+import { ref, getCurrentInstance, onMounted ,computed,nextTick} from "vue"
 const { proxy } = getCurrentInstance();
 import useClipboard from 'vue-clipboard3';
 const { toClipboard } = useClipboard();
@@ -63,8 +63,8 @@ const columns = [
   {
     label: "失效时间",
     prop: "expireTime",
+    scopedSlots: "expireTime"
   },
-  
   {
     label: "浏览次数",
     prop: "showCount",
@@ -74,8 +74,8 @@ const columns = [
 
 const tableData = ref({});
 const tableOptions = {
-  extraHeight: 100,
-  selectType: "checkbox"
+  extHeight: 100,
+  selectType: "checkbox",
 };
 
 const loadDataList = async () => {

@@ -1,126 +1,91 @@
 <template>
   <div>
-    <el-table
-    ref="dataTable"
-    :data="dataSource.list || []"
-      :stripe="options.stripe"
-      :border="options.border"
-      header-row-class-name="table-header-row"
-      highlight-current-row
-      @row-click="handleRowClick"
-      @selection-change="handleSelectionChange"
-    >
-        <!-- 选择框 -->
-        <el-table-column
-        v-if="options.selectType && options.selectType == 'checkbox'"
-        type="selection"
-        width="55"
-        align="center"
-        >
-        </el-table-column>
-        <!-- 序号 -->
-        <el-table-column
-        v-if="options.showIndex"
-        type="index"
-        width="50"
-        align="center"
-        label="序号"
-        >
-        </el-table-column>
-        <!-- 数据列 -->
-        <template v-for="(column,index) in columns">
-            <template v-if="column.scopedSlots">
-                <el-table-column
-                :key="index"
-                :prop="column.prop"
-                :label="column.label"
-                :width="column.width"
-                :align="column.align || 'left'"
-                >
-                    <template #default="scope">
-                        <slot :name="column.scopedSlots" :row="scope.row" :index="scope.$index"></slot>
-                    </template>
-                </el-table-column>
+    <el-table ref="dataTable" :data="dataSource.list || []" :stripe="options.stripe" :border="options.border"
+      header-row-class-name="table-header-row" highlight-current-row @row-click="handleRowClick"
+      @selection-change="handleSelectionChange" :height="tableHeight">
+      <!-- 选择框 -->
+      <el-table-column v-if="options.selectType && options.selectType == 'checkbox'" type="selection" width="55"
+        align="center">
+      </el-table-column>
+      <!-- 序号 -->
+      <el-table-column v-if="options.showIndex" type="index" width="50" align="center" label="序号">
+      </el-table-column>
+      <!-- 数据列 -->
+      <template v-for="(column, index) in columns">
+        <template v-if="column.scopedSlots">
+          <el-table-column :key="index" :prop="column.prop" :label="column.label" :width="column.width"
+            :align="column.align || 'left'">
+            <template #default="scope">
+              <slot :name="column.scopedSlots" :row="scope.row" :index="scope.$index"></slot>
             </template>
-            <template v-else>
-                <el-table-column
-                :key="index"
-                :prop="column.prop"
-                :label="column.label"
-                :width="column.width"
-                :align="column.align || 'left'"
-                :fixed="column.fixed"
-                ></el-table-column>
-            </template>
+          </el-table-column>    
         </template>
+        <template v-else>
+          <el-table-column :key="index" :prop="column.prop" :label="column.label" :width="column.width"
+            :align="column.align || 'left'" :fixed="column.fixed"></el-table-column>
+        </template>
+      </template>
     </el-table>
     <!-- 分页 -->
-     <div class="pagination"  v-if="showPagination">
-        <el-pagination
-        v-if="dataSource.totalCount"
-        background
-        :page-sizes="[15,30,50,100]"
-        :total="dataSource.totalCount"
-        :page-size="dataSource.pageSize"
-        :current-page.sync="dataSource.pageNo"
-        @current-change="handlePageNoChange"
-        @size-change="handlePageSizeChange"
-        style="text-align: right;"
-        :layout="layout"
-        ></el-pagination>
-     </div>
+    <div class="pagination" v-if="showPagination">
+      <el-pagination v-if="dataSource.totalCount" background :page-sizes="[15, 30, 50, 100]"
+        :total="dataSource.totalCount" :page-size="dataSource.pageSize" :current-page.sync="dataSource.pageNo"
+        @current-change="handlePageNoChange" @size-change="handlePageSizeChange" style="text-align: right;"
+        :layout="layout"></el-pagination>
+    </div>
   </div>
-</template>
+</template>zz
 
 <script setup>
 
 
-import { ref ,computed, onMounted} from 'vue';
+import { ref, computed, onMounted } from 'vue';
 
 const emit = defineEmits(['rowSelected', 'row-click']);
 const props = defineProps({
-    dataSource: Object,
-    showPagination: {
-        type: Boolean,
-        default: true
+  dataSource: Object,
+  showPagination: {
+    type: Boolean,
+    default: true
+  },
+  showPageSize: {
+    type: Boolean,
+    default: true
+  },
+  options: {
+    type: Object,
+    default: {
+      extHeight: 0,
+      showIndex: false,
     },
-    showPageSize: {
-        type: Boolean,
-        default: true
-    },
-    options: {
-        type: Object,
-        default: {
-            extHeight: 0,
-            showIndex: false,
-        },
-    },
-    columns: Array,
-    fetch: Function,
-    initFetch: {
-        type: Boolean,
-        default: true
-    },
+  },
+  columns: Array,
+  fetch: Function,
+  initFetch: {
+    type: Boolean,
+    default: true
+  },
 })
 const layout = computed(() => {
-    return `total, ${props.showPageSize ? "sizes, " : ""} ,prev, pager, next, jumper`;
+  return `total, ${props.showPageSize ? "sizes, " : ""} ,prev, pager, next, jumper`;
 });
 //顶部60 内容区域距离顶部20 内容上下内间距15 分页区域高度 46
-const topHeight = 60 + 20 + 30 + 46; 
+const topHeight = 60 + 20 + 30 + 46;
+
 
 const tableHeight = computed(() => {
-    return props.options.tableHeight ? props.options.tableHeight : window.innerHeight - topHeight - props.options.extHeight;
+  return props.options.tableHeight ? props.options.tableHeight : window.innerHeight - topHeight - props.options.extHeight;
 });
 
 
 const init = () => {
-    if (props.initFetch && props.fetch) {
-         props.fetch();
-    }
+  if (props.initFetch && props.fetch) {
+    props.fetch();
+  }
 };
 
-onMounted(() => {                
-    init();
+onMounted(() => {
+  init();
 });
 
 
@@ -128,45 +93,45 @@ const dataTable = ref();
 
 //消除选中
 const clearSelection = () => {
-    dataTable.value.clearSelection();
+  dataTable.value.clearSelection();
 };
 
 //选中
-const setCurrentRow = (rowKey,rowValue) => {
-    let row = props.dataSource.list.find((item) => {
-        return item[rowKey] === rowValue;
-    });
-    if (row) {
-        dataTable.value.setCurrentRow(row);
-    }   
+const setCurrentRow = (rowKey, rowValue) => {
+  let row = props.dataSource.list.find((item) => {
+    return item[rowKey] === rowValue;
+  });
+  if (row) {
+    dataTable.value.setCurrentRow(row);
+  }
 };
 //将子组件暴露出去
 defineExpose({
-    clearSelection,
-    setCurrentRow
+  clearSelection,
+  setCurrentRow
 });
 
 //行点击
 const handleRowClick = (row) => {
-    emit('row-click', row);
+  emit('row-click', row);
 };
 
 //多选
 const handleSelectionChange = (selection) => {
-    emit('rowSelected', selection);
+  emit('rowSelected', selection);
 };
 
 //切换每页大小
 const handlePageSizeChange = (size) => {
-    props.dataSource.pageSize = size;
-    props.dataSource.pageNo = 1;
-    props.fetch();
+  props.dataSource.pageSize = size;
+  props.dataSource.pageNo = 1;
+  props.fetch();
 };
 
 //切换页码
 const handlePageNoChange = (pageNo) => {
-    props.dataSource.pageNo = pageNo;
-    props.fetch();  
+  props.dataSource.pageNo = pageNo;
+  props.fetch();
 };
 
 init();
@@ -206,7 +171,8 @@ $shadow-color: rgba(255, 140, 0, 0.2);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   margin: 10px 0;
   height: 100%;
-  
+  flex: 1;
+
   &:hover {
     transform: translateY(-2px);
     box-shadow: 0 15px 35px $shadow-color;
@@ -222,7 +188,7 @@ $shadow-color: rgba(255, 140, 0, 0.2);
       position: relative;
       overflow: hidden;
       border-bottom: 2px solid rgba(255, 255, 255, 0.1);
-      
+
       &::after {
         content: '';
         position: absolute;
@@ -230,12 +196,10 @@ $shadow-color: rgba(255, 140, 0, 0.2);
         left: -100%;
         width: 50%;
         height: 100%;
-        background: linear-gradient(
-          90deg,
-          transparent,
-          rgba(255, 255, 255, 0.3),
-          transparent
-        );
+        background: linear-gradient(90deg,
+            transparent,
+            rgba(255, 255, 255, 0.3),
+            transparent);
         animation: shimmer 3s infinite;
       }
     }
@@ -245,13 +209,13 @@ $shadow-color: rgba(255, 140, 0, 0.2);
     tr {
       transition: all 0.3s ease;
       position: relative;
-      
+
       td {
         padding: 16px 12px;
         color: #444;
         font-size: 14px;
         border-bottom: 1px solid rgba(255, 140, 0, 0.1);
-        
+
         &::before {
           content: '';
           position: absolute;
@@ -273,26 +237,26 @@ $shadow-color: rgba(255, 140, 0, 0.2);
   :deep(.el-table__body-wrapper) {
     // 优化滚动条样式
     overflow-y: auto;
-    
+
     // 自定义滚动条样式
     &::-webkit-scrollbar {
       width: 10px; // 加宽滚动条
       height: 10px;
     }
-    
+
     &::-webkit-scrollbar-thumb {
       background: #ddd;
       border-radius: 5px;
       border: 2px solid transparent;
       background-clip: padding-box;
-      
+
       &:hover {
         background: #ccc;
         border: 2px solid transparent;
         background-clip: padding-box;
       }
     }
-    
+
     &::-webkit-scrollbar-track {
       background: transparent;
     }
@@ -305,44 +269,46 @@ $shadow-color: rgba(255, 140, 0, 0.2);
   z-index: 1; // 确保分页器在最上层
   padding: 12px 24px;
   background: transparent;
-  
+  flex-shrink: 0;
+
   :deep(.el-pagination) {
     display: flex;
     align-items: center;
     justify-content: flex-end;
     gap: 8px;
-    
-    .btn-prev, .btn-next {
+
+    .btn-prev,
+    .btn-next {
       background: rgba(255, 140, 0, 0.1);
       border: none;
       color: #ff8c00;
-      
+
       &:disabled {
         background: rgba(0, 0, 0, 0.05);
         color: #999;
       }
     }
-    
+
     .el-pager li {
       background: transparent;
       border: 1px solid rgba(255, 140, 0, 0.2);
       color: #666;
-      
+
       &.active {
         background: linear-gradient(135deg, #ff8c00 0%, #ff4500 100%);
         color: #fff;
         border: none;
       }
     }
-    
+
     .el-pagination__total,
     .el-pagination__sizes {
       margin-right: 16px;
       color: #666;
-      
+
       .el-select .el-input {
         margin: 0;
-        
+
         .el-input__inner {
           background: transparent;
           border-color: rgba(255, 140, 0, 0.2);
@@ -355,7 +321,7 @@ $shadow-color: rgba(255, 140, 0, 0.2);
 // 为表格内容添加底部内边距，防止被固定的分页器遮挡
 .el-table {
   margin-bottom: 70px; // 留出分页器的空间
-  
+
   :deep(.el-table__body-wrapper) {
     // 如果表格内容较少，也确保有足够空间
     min-height: calc(100vh - 250px); // 根据实际情况调整数值
@@ -368,7 +334,7 @@ $shadow-color: rgba(255, 140, 0, 0.2);
     position: static; // 在小屏幕上取消固定定位
     margin-top: 20px;
   }
-  
+
   .el-table {
     margin-bottom: 20px;
   }
