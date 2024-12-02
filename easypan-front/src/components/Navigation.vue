@@ -151,6 +151,7 @@ watch(() => route, (newVal, oldVal) => {
     }
     if (newVal.path.indexOf("/main") === -1
         && newVal.path.indexOf("/settings/fileList") === -1
+        && newVal.path.indexOf("/share") === -1
     ) {
         return;
     }

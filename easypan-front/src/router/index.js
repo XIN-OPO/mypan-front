@@ -72,9 +72,19 @@ const router = createRouter({
             menuCode: "settings"
           },
           component: () => import("@/views/admin/FileList.vue")
-        }
+        },
       ]
     },
+    {
+      path: '/shareCheck/:shareId',
+      name: '分享验证',
+      component: () => import("@/views/webShare/ShareCheck.vue")
+    },
+    {
+      path: '/share/:shareId',
+      name: '分享',
+      component: () => import("@/views/webShare/Share.vue") 
+    }
   ]
 })
 

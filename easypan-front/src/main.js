@@ -18,7 +18,7 @@ import CategoryInfo from '@/js/CategoryInfo';
 import HighLightPlugin from '@highlightjs/vue-plugin';
 import 'highlight.js/styles/monokai-sublime.css';
 import 'highlight.js/lib/common';
-
+import Hls from 'hls.js';
 //自定义组件
 import Dialog from './components/Dialog.vue';
 import Verify from './utills/Verify';
@@ -34,7 +34,6 @@ import Navigation from './components/Navigation.vue';
 import FolderSelect from './components/FolderSelect.vue';
 import Preview from './components/preview/Preview.vue';
 import Window from './components/Window.vue';
-
 const app = createApp(App)
 
 app.use(createPinia())

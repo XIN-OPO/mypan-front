@@ -88,6 +88,7 @@ const show = (data)=>{
     dialogConfig.value.show = true;
     showCancel.value = true;
     resultInfo.value = {};
+    dialogConfig.value.buttons[0].text = "确定";
     nextTick(()=>{
         formDataRef.value.resetFields();
         formData.value = Object.assign({},data);

@@ -2,7 +2,7 @@
   <div class="login-body">
     <div class="bg"></div>
     <div class="login-panel">
-      <el-form class="login-register" :model="formData" :rules="rules" ref="formDataRef" @submit.prevent>
+      <el-form class="login-register" :model="formData" :rules="rules" ref="formDataRef" @submit.prevent="doSubmmit">
         <div class="login-title">myPan</div>
         <el-form-item prop="email">
           <el-input size="large" clearable placeholder="请输入邮箱" v-model.trim="formData.email" maxLength="150">
@@ -164,7 +164,7 @@ const route = useRoute();
 
 const api = {
   checkCode: "/api/checkCode",
-  sendEmailCode: "/sendEmaildCode",
+  sendEmailCode: "/sendEmailCode",
   register: "/register",
   login: "/login",
   resetPwd: "/resetPwd",
@@ -198,13 +198,13 @@ const rules = {
   ],
   emailCode: [{ required: true, message: "请输入邮箱验证码" }],
   nickName: [{ required: true, message: "请输入昵称" }],
-  registerPassword: [ 
-    { required: true, message: "请输入密码" },
-    { validator: proxy.Verify.password, message: "密码只能是数字字母特殊字符，8-18位" }
-  ],
-  reRegisterPassword: [
-    { validator: checkRePassword, message: "两次输入密码不一致" }
-  ],
+  // registerPassword: [ 
+  //   { required: true, message: "请输入密码" },
+  //   { validator: proxy.Verify.password, message: "密码只能是数字字母特殊字符，8-18位" }
+  // ],
+  // reRegisterPassword: [
+  //   { validator: checkRePassword, message: "两次输入密码不一致" }
+  // ],
   checkCode: [{
     required: true, message: "请输入验证码",
   }]
@@ -251,8 +251,32 @@ const getEmailCode = () => {
     });
   });
 }
+const register = async () => {
+  let params = {};
+  Object.assign(params, formData.value);
+  params.password = params.registerPassword;
+  delete params.reRegisterPassword;
+  delete params.registerPassword;
+  let result = await proxy.Request({
+    url: api.register,
+    params: params,
+    errorCallback: () => {
+      changeCheckCode(0);
+    }
+  })
+  if (!result) {
+    return;
+  }
+  proxy.Message.success("注册成功");
+  showPanel(1);
+}
+
 //登录 注册 重置密码 提交表单
 const doSubmmit = () => {
+
+  console.log('当前操作类型:', opType.value);
+  console.log('表单数据:', formData.value);
+
   formDataRef.value.validate(async (valid) => {
     if (!valid) {
       return

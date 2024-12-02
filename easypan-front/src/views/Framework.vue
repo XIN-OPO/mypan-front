@@ -280,6 +280,8 @@ const getUseSpace = async () => {
   console.log(useSpaceInfo.value);
 };
 getUseSpace();
+
+const isAdmin = ref(false);
 </script>
 
 <style lang="scss" scoped>

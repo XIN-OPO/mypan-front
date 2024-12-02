@@ -31,6 +31,9 @@
             </span>
           </div>
         </template>
+        <template #recoveryTime="{ index, row }">
+          {{ row.lastUpdateTime }}
+        </template>
         <template #fileSize="{ index, row }">
           <span v-if="row.fileSize">{{ proxy. Utils.sizeToStr(row.fileSize) }}</span>
           <span v-else>--</span>
@@ -59,13 +62,14 @@ const columns = [
   {
     label: "删除时间",
     prop: "recoveryTime",
-    width: 200
+    width: 300,
+    scopedSlots: "recoveryTime",
   },
   {
     label: '大小',
     prop: 'fileSize',
+    scopedSlots: 'fileSize',
     width: 150,
-    scopedSlots: 'fileSize'
   }
 ];
 

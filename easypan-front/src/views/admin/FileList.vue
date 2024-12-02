@@ -33,8 +33,6 @@
             </template>
             <span class="file-name" :title="row.fileName" v-if="!row.showEdit">
               <span @click="preview(row)">{{ row.fileName }}</span>
-              <span v-if="row.status == 0" class="transfer-status">转码中</span>
-              <span v-if="row.status == 1" class="transfer-status">转码失败</span>
             </span>
             <div class="edit-panel" v-if="row.showEdit">
               <el-input v-model.trim="row.fileNameReal" ref="editNameRef" :maxlength="190"
