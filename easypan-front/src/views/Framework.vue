@@ -191,27 +191,50 @@ const menus = [
       },
     ],
   },
-  {
-    path: "/settings/fileList",
-    icon: "settings",
-    name: "设置",
-    menuCode: "settings",
-    allShow: false,
-    chidren: [
-      {
-        name: "用户文件",
-        path: "/settings/fileList",
-      },
-      {
-        name: "用户管理",
-        path: "/settings/userList"
-      },
-      {
-        path: "/settings/sysSetting",
-        name: "系统设置",
-      },
-    ],
-  }
+  // {
+  //   path: "/settings/fileList",
+  //   icon: "settings",
+  //   name: "设置",
+  //   menuCode: "settings",
+  //   allShow: false,
+  //   chidren: [
+  //     {
+  //       name: "用户文件",
+  //       path: "/settings/fileList",
+  //     },
+  //     {
+  //       name: "用户管理",
+  //       path: "/settings/userList"
+  //     },
+  //     {
+  //       path: "/settings/sysSetting",
+  //       name: "系统设置",
+  //     },
+  //   ],
+  // }
+  ...(proxy.VueCookies.get("userInfo").admin ? [
+    {
+      path: "/settings/fileList",
+      icon: "settings",
+      name: "设置",
+      menuCode: "settings",
+      allShow: false,
+      chidren: [
+        {
+          name: "用户文件",
+          path: "/settings/fileList",
+        },
+        {
+          name: "用户管理",
+          path: "/settings/userList"
+        },
+        {
+          path: "/settings/sysSetting",
+          name: "系统设置",
+        },
+      ],
+    }
+  ] : []),
 ];
 
 const currentMenu = ref({});

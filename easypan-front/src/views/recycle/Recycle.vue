@@ -194,7 +194,7 @@ const emit = defineEmits(['refresh']);
 @import '@/assets/file_list.scss';
 .file-list{
   margin: 10px;
-  
+  max-width: 90vw;
   .file-item{
     .op{
       width: 120px;

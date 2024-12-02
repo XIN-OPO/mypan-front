@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="sys-setting-panel">
+    <div class="sys-setting-panel" v-if="isAdmin">
       <el-form :model="formData" :rules="rules" ref="formDataRef" label-width="180px" @submit.prevent>
         <!--input输入-->
         <el-form-item label="注册邮箱标题" prop="registerEmailTitle">
@@ -37,7 +37,7 @@ const api = {
   getSysSettings:"/admin/getSysSettings",
   saveSysSettings:"/admin/saveSysSettings"  
 }
-
+const isAdmin = ref(false);
 const formData = ref({});
 const formDataRef = ref();
 const rules = {
@@ -55,6 +55,7 @@ const getSysSettings = async () => {
   }
   formData.value = res.data;
 }
+isAdmin.value = proxy.VueCookies.get("userInfo").admin;
 
 const saveSysSetting = async () => {
   formDataRef.value.validate(async (valid) => {
